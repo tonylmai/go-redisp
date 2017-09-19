@@ -49,6 +49,7 @@ func (c *managedCache) Get(key string) *string {
 		// Increment by 1
 		accessVal.accessed += 1
 		log.Printf("For key=%s, setting access count to %d\n", key, accessVal.accessed)
+		c.keyAccessValues[key] = accessVal
 		return &accessVal.value
 	}
 }
@@ -66,7 +67,7 @@ func (c *managedCache) Add(key string, value string) {
 	// Now add to map
 	log.Printf("Adding new key %s=%s\n", key, value)
 	t := time.Now()
-	c.keyAccessValues[key] = accessValue{t, 1, value,}
+	c.keyAccessValues[key] = accessValue{t, 0, value,}
 }
 
 // Get the LRU entry in the cache. Should there be more than one, chose the first encounter
