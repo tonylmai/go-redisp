@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
-	"github.com/braintree/manners"
 	"github.com/go-redis/redis"
 )
 
@@ -62,7 +60,7 @@ func Start(config Config) {
 	log.Printf("RedisP is now ready to accept REST request on port %s\n", config.Port)
 
 	// launch web services now
-	err := manners.ListenAndServe(string(config.Port), nil)
+	err := http.ListenAndServe(string(config.Port), nil)
 	if err != nil {
 		panic(err)
 	}
@@ -70,46 +68,58 @@ func Start(config Config) {
 
 // Service the /get endpoint
 func get(res http.ResponseWriter, req *http.Request) {
-	log.Printf("Got a request \n")
-
 	// single client from the start
 	cache.Lock()
 	defer cache.Unlock()
 
 	// get the key TODO add defensive code for invalid path
-	path := req.URL.Path
-	parts := strings.Split(path, "/")
-	key := parts[2]
+	key := req.URL.Query().Get("key")
 	if key == "" {
+		log.Println("key is empty\n")
 		fmt.Print(res, "key is empty", 400)
 		return
 	}
 
 	// now Get from the managedCache
+	log.Printf("Fetching for key=%s\n", key)
 	var value = cache.Get(key)
 
 	if value == nil {
+		log.Printf("cache does not contain key=%s\n", key)
+
+		if backingRedis == nil {
+			log.Println("No backing Redis")
+			fmt.Print(res, "Backing Redis not connected", 500)
+			return
+		}
+
 		// Get from backing Redis
 		value, err := backingRedis.Get(key).Result()
 		if err == redis.Nil {
+			log.Printf("Backing Redis has no key=%s\n", key)
 			fmt.Print(res, "Not Found", 404)
+			return
 		} else if err != nil {
 			panic(err)
 		} else {
+			log.Printf("Found value from backing Redis: key=%s returns %s\n", key, value)
 			cache.Add(key, value)
 			// return as a string
 			fmt.Print(res, value, 200)
+			return
 		}
 	} else {
-		fmt.Print(res, value, 200)
+		log.Printf("Found value from cache: key=%s returns %s\n", key, *value)
+		fmt.Print(res, *value, 200)
+		return
 	}
-	return
 }
 
 // Not supported endpoints
 func notSupportURL(res http.ResponseWriter, req *http.Request) {
-	log.Println("Not a valid path")
-	fmt.Print(res, "Invalid path")
+	path := req.URL.Path
+	log.Printf("(400) %s - Not Supported.\n", path)
+	fmt.Fprint(res, "Not Supported", 400)
 }
 
 // Listens to OS signal for a shutdown message
@@ -122,5 +132,6 @@ func listenForShutdown(ch <-chan os.Signal) {
 	log.Println("Got a ShutDown signal from OS. Going down NOW...")
 
 	// Send signal to no longer accept connection request and shutdown after all current requests are completed.
-	manners.Close()
+	//manners.Close()
+	os.Exit(1)
 }
