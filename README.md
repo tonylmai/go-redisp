@@ -17,7 +17,7 @@ Launch Redis Proxy by issuing this command
 
 This will start the web server listening on port 9997 (configurable using the conf.yaml file).
 
-Once the server is up and running, send a `curl http://localhost:9997/get/abc` command to fetch for a stored value. If a value is not found, a 404 will return to the client.
+Once the server is up and running, send a `curl http://localhost:9997/get?key=abc` command to fetch for a stored value. If a value is not found, a 404 will return to the client.
 
 *Launch Redis with Docker*
 
@@ -31,9 +31,7 @@ To
 
 **High-level architecture**
 
-go-redisp will be implemented as a REST API service. At the start, there will be a single endpoint '/fetch?key=xyz'.
-
-I use BrainTree's manners library to launch the web server as it provides a nice way to shutdown the server gracefully.
+go-redisp will be implemented as a REST API service. At the start, there will be a single endpoint '/get?key=xyz'.
 
 As for Redis client, I chose `github.com/go-redis/redis` for its simplicity. 
 
