@@ -59,7 +59,7 @@ func (c *managedCache) Add(key string, value string) {
 	// If at capacity, drop the LRU in the map (sorted by accessed)
 	if int64(len(c.keyAccessValues)) == c.capacity {
 		var lru = getLRUKey(c.keyAccessValues)
-		log.Printf("cach is at Capacity. Removing key=%s\n", key)
+		log.Printf("cach is at Capacity. Removing key=%s\n", lru)
 		delete(c.keyAccessValues, lru)
 	}
 
