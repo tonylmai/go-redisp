@@ -40,7 +40,7 @@ func init() {
 
 }
 
-// Starting the REST server and redis client
+// Start REST server and redis client
 func Start(config Config) {
 	log.Printf("Starting RedisP with\n\tUrl: %s\n\tCapacity: %d\n\tExpiry: %d\n\tPort:%s", config.BackingRedisUrl, config.Capacity, config.Expiry, config.Port)
 
@@ -89,7 +89,7 @@ func get(res http.ResponseWriter, req *http.Request) {
 	var value = cache.Get(key)
 
 	if value == nil {
-		// Get from Redis-back
+		// Get from backing Redis
 		value, err := backingRedis.Get(key).Result()
 		if err == redis.Nil {
 			fmt.Print(res, "Not Found", 404)
@@ -106,7 +106,7 @@ func get(res http.ResponseWriter, req *http.Request) {
 	return
 }
 
-// Unrecognized endpoints
+// Not supported endpoints
 func notSupportURL(res http.ResponseWriter, req *http.Request) {
 	log.Println("Not a valid path")
 	fmt.Print(res, "Invalid path")

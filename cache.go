@@ -31,7 +31,7 @@ func NewManagedCache(capacity int64, expiry int64) *managedCache {
 	return &m
 }
 
-// Get value from cache. If cache has expired, delete it from the cache and return nil
+// Get value from cache. If cache has expired, delete it from the cache and return nil ("" is a valid value)
 func (c *managedCache) Get(key string) *string {
 	var accessVal =  c.keyAccessValues[key]
 	// How long have you been in the cache?
@@ -54,12 +54,12 @@ func (c *managedCache) Add(key string, value string) {
 		delete(c.keyAccessValues, key)
 	}
 
-	// Now add to both maps
+	// Now add to map
 	t := time.Now()
 	c.keyAccessValues[key] = accessValue{t, 1, value,}
 }
 
-// Get the oldest entry in the cache
+// Get the LRU entry in the cache. Should there be more than one, chose the first encounter
 func getLRUKey(m map[string]accessValue) string {
 	frequency := math.MaxInt64
 	lru := ""
