@@ -1,0 +1,9 @@
+redis:
+  url: localhost:6379
+
+cache:
+  capacity: 10000
+  expiry: 5
+
+service:
+  port: :9997
