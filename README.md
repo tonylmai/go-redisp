@@ -9,11 +9,11 @@ Build go-redisp by execute the following command
 
 Launch the backing Redis by issuing this command
 
-```$ redis-server&```
+```$ redis-server --daemonize yes```
 
 Launch Redis Proxy by issuing this command
 
-```$ go-redisp&```
+```$ go-redisp ```
 
 This will start the web server listening on port 9997 (configurable using the conf.yaml file).
 
@@ -25,9 +25,13 @@ go-redisp is configured with a Dockerfile and docker-compose.yml where you may b
 
 To build the Docker image, 
 
-```$ docker build -t go-redisp```
+`$ go build`
 
-To 
+`$ docker build -t go-redisp .`
+
+To run with Docker,
+
+`docker run -p 9997:9997 -ti -v /tmp:tmp go-redisp /bin/bash`
 
 **High-level architecture**
 
