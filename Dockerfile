@@ -1,17 +1,17 @@
 # Use a base OS as a parent image
-FROM centos7
+FROM centos:7
 
 # Set the working directory to /app
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-ADD . /app
+ADD ./go-redisp /app
 
 # Make port 80 available to the world outside this container
-EXPOSE 80
+EXPOSE 9997
 
 # Define environment variable
 ENV NAME RedisP
 
 # Run the binary when the container launches
-CMD ["go-redisp"]
+CMD /app/go-redisp
