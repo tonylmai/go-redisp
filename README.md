@@ -70,18 +70,3 @@ The cache capacity is configured in terms of number of keys it retains.
 The proxy is able to process at least one concurrent client request  i.e. when more than one client makes a request to the proxy at the same time, the second client’s request only starts processing once the first one has completed .
 
 *Configuration*
-
-**Minutes**
-
-Learning Go - 4 days
-
-Design - 30 minutes
-
-Coding - 2 hours
-
-Dockerfile and compose - 30 minutes
-
-Testing - 1 hours
-
-Debugging - 1 hour
-
